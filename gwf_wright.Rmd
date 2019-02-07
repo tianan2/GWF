@@ -1,0 +1,53 @@
+---
+title: "Untitled"
+author: "Jaehwan Lim"
+date: "February 1, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(haven)
+
+gwf_raw <- read_dta("GWF.dta")
+
+```
+
+## plotting China's factor score by year
+
+```{r}
+library(psych)
+
+gwf_china_processed <- gwf_china %>% 
+  select(-cowcode, -region, -foreignimposd, -ldr1styear, -starts_with("gwf_"), -starts_with("period"), seizure_foreign, sectyapp_mil, paramil_noparamil) %>% 
+  select(-ld, -coldwar, -country, -casename, -G_age, -post_exit_type, -post_exit_fate, -partyexcom_noexcom, -legnoms_priordict, -legnoms_noleg, -legnoms_nooppose, -electldr_family, -year)
+
+  
+fa(gwf_china_processed, factors = 3)
+
+
+
+gwf_china %>% 
+  ggplot(aes(year, ld)) + 
+  geom_line()
+  
+  
+
+```
+
+```{r}
+gwf_per <- gwf_raw %>% 
+  select(sectyapp_pers, officepers, heirfamily, paramil_pers, leaderrelatvs, milmerit_pers, milnotrial, partyexcom_pers, heirclan, partyrbrstmp) 
+
+
+gwf_china <- gwf_raw %>% 
+  filter(gwf_country == "China") 
+
+gwf_china %>% 
+  select()
+```
+
