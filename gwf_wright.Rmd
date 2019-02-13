@@ -3,6 +3,8 @@ title: "Untitled"
 author: "Jaehwan Lim"
 date: "February 1, 2019"
 output: html_document
+editor_options: 
+  chunk_output_type: inline
 ---
 
 ```{r setup, include=FALSE}
@@ -26,28 +28,50 @@ gwf_china_processed <- gwf_china %>%
   select(-cowcode, -region, -foreignimposd, -ldr1styear, -starts_with("gwf_"), -starts_with("period"), seizure_foreign, sectyapp_mil, paramil_noparamil) %>% 
   select(-ld, -coldwar, -country, -casename, -G_age, -post_exit_type, -post_exit_fate, -partyexcom_noexcom, -legnoms_priordict, -legnoms_noleg, -legnoms_nooppose, -electldr_family, -year)
 
-  
-fa(gwf_china_processed, factors = 3)
+gwf_china_pcm <- prcomp(gwf_china_processed, center = T, scale. = T)
 
+factanal(x = gwf_china_processed, factors = 3)
 
+gwf_china_processed <- gwf_china %>% 
+  select(-cowcode, -region, -foreignimposd, -ldr1styear, -starts_with("gwf_"), -starts_with("period"), seizure_foreign, sectyapp_mil, paramil_noparamil) %>% 
+  select(-ld, -coldwar, -country, -casename, -G_age, -post_exit_type, -post_exit_fate, -partyexcom_noexcom, -legnoms_priordict, -legnoms_noleg, -legnoms_nooppose, -electldr_family, -year)
 
-gwf_china %>% 
-  ggplot(aes(year, ld)) + 
-  geom_line()
-  
-  
 
 ```
 
 ```{r}
+library(ggbiplot)
+library(broom)
+
 gwf_per <- gwf_raw %>% 
   select(sectyapp_pers, officepers, heirfamily, paramil_pers, leaderrelatvs, milmerit_pers, milnotrial, partyexcom_pers, heirclan, partyrbrstmp) 
 
+gwf_per_factanal <- factanal(gwf_per, factors = 1)
+gwf_per_pca <- prcomp(gwf_per, center = T, scale. = T)
 
-gwf_china <- gwf_raw %>% 
-  filter(gwf_country == "China") 
+gwf_per_factanal$loadings
 
-gwf_china %>% 
-  select()
+
+```
+```{r}
+
+gwf_processed <- gwf_raw %>% 
+  select(-cowcode, -region, -foreignimposd, -ldr1styear, -starts_with("gwf_"), -starts_with("period"), seizure_foreign, sectyapp_mil, paramil_noparamil, -seizure_foreign, -partyhistory_postseizure, -partymilit2) %>% 
+  select(-ld, -coldwar, -country, -casename, -G_age, -post_exit_type, -post_exit_fate, -partyexcom_noexcom, -legnoms_priordict, -legnoms_noleg, -legnoms_nooppose, -electldr_family, -year)
+
+gwf_fa <- fa(gwf_processed, nfactors = 3)
+gwf_fa$loadings
+gwf_fa$scores
+
+fa_scores_tibble <- as_tibble(gwf_fa$scores)
+gwf_raw_scores <- cbind(gwf_raw, fa_scores_tibble)
+
+gwf_raw_scores %>% 
+  filter(gwf_country == "China") %>% 
+  select(year, MR1, MR2, MR3) %>%
+  gather(score, value, -year) %>% 
+  ggplot(aes(year, value, color = score)) + 
+  geom_line()
+
 ```
 
