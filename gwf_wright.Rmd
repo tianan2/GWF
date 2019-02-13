@@ -4,7 +4,7 @@ author: "Jaehwan Lim"
 date: "February 1, 2019"
 output: html_document
 editor_options: 
-  chunk_output_type: inline
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -77,7 +77,28 @@ gwf_raw_scores %>%
   scale_x_continuous(breaks = seq(1950, 2010, 10)) +
   labs(title = "Figure 1. Three dimensions of dictatorship, China 1949-2010", 
        x = "Year", 
-       y = "Latent dimensions")
+       y = "Latent dimensions", 
+       caption = "Data from Geddes, Wright, and Frantz 2014") +
+  theme(legend.position="bottom") +
+  theme(legend.title=element_blank())
+
+```
+
+```{r}
+gwf_scores_tidied <- gwf_raw_scores %>% select(year, "country" = gwf_country, "party_strength" = MR1, "military_autonomy" = MR2, personalism = MR3) 
+
+gwf_scores_tidied %>% filter(country == c("China", "Korea North", "Vietnam")) %>% 
+  mutate(country = recode(country, "Korea North" = "North Korea")) %>% 
+  ggplot(aes(year, personalism, lty = country)) + 
+  geom_line() +
+  scale_x_continuous(breaks = seq(1950, 2010, 10)) +
+  labs(title = "Figure 2. Dimension of personalism: China, Vietnam, North Korea, 1949-2010", 
+       x = "Year", 
+       y = "Personalism index", 
+       caption = "Data from Geddes, Wright, and Frantz 2014") +
+  theme(legend.position="bottom") +
+  theme(legend.title=element_blank())
+  
 
 ```
 
