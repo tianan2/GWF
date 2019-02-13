@@ -17,6 +17,7 @@ library(haven)
 
 gwf_raw <- read_dta("GWF.dta")
 
+theme_set(theme_light())
 ```
 
 ## plotting China's factor score by year
@@ -68,10 +69,15 @@ gwf_raw_scores <- cbind(gwf_raw, fa_scores_tibble)
 
 gwf_raw_scores %>% 
   filter(gwf_country == "China") %>% 
-  select(year, MR1, MR2, MR3) %>%
+  select(year, "party strength" = MR1, "military autonomy" = MR2, personalism = MR3) %>%
   gather(score, value, -year) %>% 
-  ggplot(aes(year, value, color = score)) + 
-  geom_line()
+  mutate(score = fct_reorder(score, value)) %>% 
+  ggplot(aes(year, value, linetype = score)) + 
+  geom_line() + 
+  scale_x_continuous(breaks = seq(1950, 2010, 10)) +
+  labs(title = "Figure 1. Three dimensions of dictatorship, China 1949-2010", 
+       x = "Year", 
+       y = "Latent dimensions")
 
 ```
 
