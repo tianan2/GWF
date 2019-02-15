@@ -87,9 +87,9 @@ gwf_raw_scores %>%
 ```{r}
 gwf_scores_tidied <- gwf_raw_scores %>% select(year, "country" = gwf_country, "party_strength" = MR1, "military_autonomy" = MR2, personalism = MR3) 
 
-gwf_scores_tidied %>% filter(country == c("China", "Korea North", "Vietnam")) %>% 
+gwf_scores_tidied %>% filter(country == c("China", "Korea North", "Vietnam", "Soviet Union", "Indonesia")) %>% 
   mutate(country = recode(country, "Korea North" = "North Korea")) %>% 
-  ggplot(aes(year, personalism, lty = country)) + 
+  ggplot(aes(year, personalism, col = country)) + 
   geom_line() +
   scale_x_continuous(breaks = seq(1950, 2010, 10)) +
   labs(title = "Figure 2. Dimension of personalism: China, Vietnam, North Korea, 1949-2010", 
