@@ -11,13 +11,12 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(tidyverse)
 library(haven)
+theme_set(theme_light())
 
 gwf_raw <- read_dta("GWF.dta")
-
-theme_set(theme_light())
 ```
 
 ## plotting China's factor score by year
@@ -36,8 +35,6 @@ factanal(x = gwf_china_processed, factors = 3)
 gwf_china_processed <- gwf_china %>% 
   select(-cowcode, -region, -foreignimposd, -ldr1styear, -starts_with("gwf_"), -starts_with("period"), seizure_foreign, sectyapp_mil, paramil_noparamil) %>% 
   select(-ld, -coldwar, -country, -casename, -G_age, -post_exit_type, -post_exit_fate, -partyexcom_noexcom, -legnoms_priordict, -legnoms_noleg, -legnoms_nooppose, -electldr_family, -year)
-
-
 ```
 
 ```{r}
@@ -52,10 +49,10 @@ gwf_per_pca <- prcomp(gwf_per, center = T, scale. = T)
 
 gwf_per_factanal$loadings
 
-
 ```
-```{r}
+# Plotting the dimensions 
 
+```{r}
 gwf_processed <- gwf_raw %>% 
   select(-cowcode, -region, -foreignimposd, -ldr1styear, -starts_with("gwf_"), -starts_with("period"), seizure_foreign, sectyapp_mil, paramil_noparamil, -seizure_foreign, -partyhistory_postseizure, -partymilit2) %>% 
   select(-ld, -coldwar, -country, -casename, -G_age, -post_exit_type, -post_exit_fate, -partyexcom_noexcom, -legnoms_priordict, -legnoms_noleg, -legnoms_nooppose, -electldr_family, -year)
@@ -69,18 +66,20 @@ gwf_raw_scores <- cbind(gwf_raw, fa_scores_tibble)
 
 gwf_raw_scores %>% 
   filter(gwf_country == "China") %>% 
-  select(year, "party strength" = MR1, "military autonomy" = MR2, personalism = MR3) %>%
+  select(year, "Party strength" = MR1, "Military autonomy" = MR2, "Personalism" = MR3) %>%
   gather(score, value, -year) %>% 
-  mutate(score = fct_reorder(score, value)) %>% 
-  ggplot(aes(year, value, linetype = score)) + 
+  mutate(score = fct_reorder(score, -value)) %>% 
+  ggplot(aes(year, value, color = score)) + 
   geom_line() + 
   scale_x_continuous(breaks = seq(1950, 2010, 10)) +
   labs(title = "Figure 1. Three dimensions of dictatorship, China 1949-2010", 
        x = "Year", 
        y = "Latent dimensions", 
        caption = "Data from Geddes, Wright, and Frantz 2014") +
-  theme(legend.position="bottom") +
-  theme(legend.title=element_blank())
+  theme(legend.position = "bottom", 
+        legend.title = element_blank(),
+        legend.key.size = unit(1.5, "cm"), 
+        legend.key.width = unit(2, "cm"))
 
 ```
 
